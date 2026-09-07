@@ -1,0 +1,19 @@
+CREATE DATABASE IF NOT EXISTS campus_oj DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+USE campus_oj;
+
+CREATE TABLE IF NOT EXISTS oj_user (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT, username VARCHAR(50) NOT NULL UNIQUE, password VARCHAR(100) NOT NULL,
+  real_name VARCHAR(50), role VARCHAR(20) NOT NULL DEFAULT 'STUDENT', status VARCHAR(20) DEFAULT 'ACTIVE', create_time DATETIME
+);
+CREATE TABLE IF NOT EXISTS question (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT, title VARCHAR(200) NOT NULL, description TEXT, category VARCHAR(50), difficulty VARCHAR(20),
+  standard_answer TEXT, score INT DEFAULT 100, status VARCHAR(20) DEFAULT 'PUBLISHED', create_time DATETIME
+);
+CREATE TABLE IF NOT EXISTS exam (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(200) NOT NULL, start_time DATETIME, end_time DATETIME,
+  duration INT, status VARCHAR(20), question_ids VARCHAR(500), create_time DATETIME
+);
+CREATE TABLE IF NOT EXISTS submission (
+  id BIGINT PRIMARY KEY AUTO_INCREMENT, user_id BIGINT, exam_id BIGINT, question_id BIGINT, code TEXT,
+  language VARCHAR(20), result VARCHAR(10), score INT, judge_time BIGINT, submit_time DATETIME
+);

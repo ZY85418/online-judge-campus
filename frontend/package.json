@@ -1,0 +1,8 @@
+{
+  "name": "campus-oj-web",
+  "private": true,
+  "version": "1.0.0",
+  "scripts": { "dev": "vite", "build": "vite", "preview": "vite preview" },
+  "dependencies": { "@vitejs/plugin-vue": "latest", "axios": "latest", "vite": "latest", "vue": "latest" },
+  "devDependencies": {}
+}

@@ -1,0 +1,268 @@
+在线编程机考系统基础设计方案
+一、项目定位
+系统面向学校毕业实习和课堂机考场景，提供：
+学生在线做题和提交代码
+管理员维护题库和考试
+系统进行简单模拟判题
+学生查看成绩和错题
+系统不追求高并发和复杂安全，只保证功能流程完整、代码结构清晰、便于部署和答辩。
+二、总体架构
+Vue 前端
+   │ HTTP/JSON
+   ▼
+Spring Boot 后端
+   ├── Controller 接口层
+   ├── Service 业务层
+   ├── Mapper/DAO 数据访问层
+   └── Entity 数据实体层
+   │
+   ▼
+MySQL 数据库
+推荐技术组合：
+后端：Spring Boot + MyBatis-Plus
+前端：Vue 3 + Element Plus
+数据库：MySQL 8
+接口风格：RESTful API
+登录方式：JWT
+代码编辑器：简单文本编辑框
+判题方式：本地模拟判题，不执行真实用户代码
+三、功能模块
+1. 用户模块
+角色：
+管理员
+学生
+功能：
+登录
+注册
+退出登录
+根据角色显示不同菜单
+修改个人信息
+2. 题库模块
+管理员功能：
+新增题目
+编辑题目
+删除题目
+设置题目分类
+设置难度
+配置标准答案和测试用例
+学生功能：
+浏览题目
+按分类筛选
+按难度筛选
+查看题目详情
+3. 在线编程模块
+学生可以：
+查看题目描述
+编写代码
+选择编程语言
+点击“运行”
+点击“提交”
+查看判题结果
+保存答题记录
+ 仅支持Java。
+4. 模拟判题模块
+第一版不执行真实代码，只根据提交内容进行简单判断。
+示例逻辑：
+提交代码为空 → RE
+代码包含指定关键字或标准答案片段 → AC
+其他情况 → WA
+判题结果：
+AC：答案正确
+WA：答案错误
+RE：运行错误
+同时返回：
+判题状态
+得分
+简单提示
+判题时间
+5. 考试模块
+管理员：
+创建考试
+设置考试名称
+设置开始和结束时间
+选择考试题目
+发布或关闭考试
+学生：
+查看可参加考试
+开始考试
+限时答题
+提交代码
+提前交卷
+自动收卷
+第一版可以采用前端倒计时，提交时由后端再次校验时间。
+6. 成绩模块
+学生：
+查看考试成绩
+查看答题记录
+查看每道题得分
+查看错题
+管理员：
+查看考试成绩列表
+按学生查询
+按考试查询
+查看统计结果
+四、核心数据表
+user 用户表
+字段	说明
+id	用户 ID
+username	用户名
+password	密码
+real_name	姓名
+role	STUDENT/ADMIN
+status	状态
+create_time	创建时间
+
+question 题目表
+字段	说明
+id	题目 ID
+title	题目标题
+description	题目描述
+category	分类
+difficulty	难度
+standard_answer	标准答案
+score	分值
+status	状态
+create_time	创建时间
+
+exam 考试表
+字段	说明
+id	考试 ID
+name	考试名称
+start_time	开始时间
+end_time	结束时间
+duration	考试时长
+status	状态
+create_time	创建时间
+
+exam_question 考试题目关系表
+字段	说明
+id	主键
+exam_id	考试 ID
+question_id	题目 ID
+sort_order	题目顺序
+
+submission 提交记录表
+字段	说明
+id	提交 ID
+user_id	学生 ID
+exam_id	考试 ID
+question_id	题目 ID
+code	提交代码
+language	编程语言
+result	AC/WA/RE
+score	得分
+submit_time	提交时间
+
+exam_result 考试成绩表
+字段	说明
+id	成绩 ID
+user_id	学生 ID
+exam_id	考试 ID
+total_score	总分
+submit_time	交卷时间
+
+五、主要页面设计
+学生端
+登录页
+ ├── 首页
+ ├── 题库页
+ ├── 题目详情/在线编程页
+ ├── 考试列表页
+ ├── 考试答题页
+ ├── 成绩页
+ └── 错题页
+管理员端
+管理员登录
+ ├── 管理首页
+ ├── 用户管理
+ ├── 题库管理
+ ├── 考试管理
+ ├── 成绩管理
+ └── 系统统计
+六、核心接口
+用户接口
+POST /api/auth/login
+POST /api/auth/register
+GET  /api/user/current
+POST /api/auth/logout
+题目接口
+GET    /api/questions
+GET    /api/questions/{id}
+POST   /api/questions
+PUT    /api/questions/{id}
+DELETE /api/questions/{id}
+考试接口
+GET  /api/exams
+POST /api/exams
+PUT  /api/exams/{id}
+POST /api/exams/{id}/start
+POST /api/exams/{id}/submit
+判题接口
+POST /api/submissions/run
+POST /api/submissions/submit
+GET  /api/submissions/my
+成绩接口
+GET /api/results/my
+GET /api/results/{examId}
+GET /api/results/{examId}/detail
+七、主要业务流程
+管理员登录
+  ↓
+创建题目
+  ↓
+创建考试并选择题目
+  ↓
+发布考试
+  ↓
+学生登录
+  ↓
+进入考试
+  ↓
+编写代码并提交
+  ↓
+模拟判题
+  ↓
+自动计算分数
+  ↓
+学生查看成绩
+八、开发顺序
+建议按以下顺序开发：
+创建 Spring Boot 和 Vue 项目
+设计并创建数据库表
+完成用户登录和权限
+完成题库管理
+完成题目浏览和在线编程页面
+完成模拟判题
+完成考试创建和答题
+完成成绩统计
+前后端联调
+编写测试和部署文档
+九、基础测试要求
+至少测试以下场景：
+管理员能否登录
+学生能否注册和登录
+题目能否新增、修改、删除
+学生能否进入考试
+空代码提交是否返回 RE
+正确代码是否返回 AC
+错误代码是否返回 WA
+考试结束后是否不能继续提交
+成绩是否正确保存和查询
+不同角色是否能访问正确页面
+十、建议的第一版范围
+第一版只实现：
+登录注册
+用户权限
+题库管理
+学生做题
+模拟判题
+考试管理
+成绩查看
+暂时不要实现：
+真实代码沙箱
+多语言编译执行
+高并发判题
+微服务
+Docker 集群
+在线协作
+复杂监考和反作弊
