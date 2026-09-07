@@ -2,6 +2,7 @@ package com.campus.oj.controller;
 
 import com.campus.oj.entity.Exam;
 import com.campus.oj.repository.ExamRepository;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -12,10 +13,10 @@ import java.util.List;
 public class ExamController {
     private final ExamRepository exams;
     public ExamController(ExamRepository exams) { this.exams=exams; }
-    @GetMapping public List<Exam> list() { return exams.findAll(); }
-    @PostMapping @ResponseStatus(HttpStatus.CREATED) public Exam create(@RequestBody Exam exam) { exam.id=null; return exams.save(exam); }
-    @PutMapping("/{id}") public Exam update(@PathVariable Long id, @RequestBody Exam exam) { exam.id=id; return exams.save(exam); }
+    @GetMapping public List<Exam> list() { return exams.selectList(new QueryWrapper<Exam>()); }
+    @PostMapping @ResponseStatus(HttpStatus.CREATED) public Exam create(@RequestBody Exam exam) { exam.id=null; exams.insert(exam); return exam; }
+    @PutMapping("/{id}") public Exam update(@PathVariable Long id, @RequestBody Exam exam) { exam.id=id; exams.updateById(exam); return exam; }
     @PostMapping("/{id}/start") public Exam start(@PathVariable Long id) { Exam exam=find(id); if (!"PUBLISHED".equals(exam.status)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"考试尚未发布"); return exam; }
     @PostMapping("/{id}/submit") public Exam finish(@PathVariable Long id) { return find(id); }
-    private Exam find(Long id) { return exams.findById(id).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"考试不存在")); }
+    private Exam find(Long id) { Exam exam=exams.selectById(id); if(exam==null) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"考试不存在"); return exam; }
 }

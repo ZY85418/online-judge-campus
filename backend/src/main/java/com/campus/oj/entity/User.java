@@ -1,15 +1,19 @@
 package com.campus.oj.entity;
 
-import javax.persistence.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 
-@Entity @Table(name = "oj_user")
+@TableName("oj_user")
 public class User {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) public Long id;
-    @Column(unique = true, nullable = false) public String username;
-    @Column(nullable = false) public String password;
+    @TableId(type = IdType.AUTO) public Long id;
+    public String username;
+    public String password;
+    @TableField("real_name")
     public String realName;
-    @Column(nullable = false) public String role = "STUDENT";
+    public String role = "STUDENT";
     public String status = "ACTIVE";
-    public LocalDateTime createTime = LocalDateTime.now();
+    @TableField("create_time") public LocalDateTime createTime = LocalDateTime.now();
 }

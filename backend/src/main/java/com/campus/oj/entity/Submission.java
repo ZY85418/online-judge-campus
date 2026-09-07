@@ -1,18 +1,21 @@
 package com.campus.oj.entity;
 
-import javax.persistence.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 
-@Entity
+@TableName("submission")
 public class Submission {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) public Long id;
-    public Long userId;
-    public Long examId;
-    public Long questionId;
-    @Column(columnDefinition = "TEXT") public String code;
+    @TableId(type = IdType.AUTO) public Long id;
+    @TableField("user_id") public Long userId;
+    @TableField("exam_id") public Long examId;
+    @TableField("question_id") public Long questionId;
+    public String code;
     public String language = "Java";
     public String result;
     public Integer score;
-    public Long judgeTime;
-    public LocalDateTime submitTime = LocalDateTime.now();
+    @TableField("judge_time") public Long judgeTime;
+    @TableField("submit_time") public LocalDateTime submitTime = LocalDateTime.now();
 }

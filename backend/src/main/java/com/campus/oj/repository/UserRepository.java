@@ -1,3 +1,4 @@
 package com.campus.oj.repository;
-import com.campus.oj.entity.User; import org.springframework.data.jpa.repository.JpaRepository; import java.util.Optional;
-public interface UserRepository extends JpaRepository<User, Long> { Optional<User> findByUsername(String username); }
+import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import com.campus.oj.entity.User;
+public interface UserRepository extends BaseMapper<User> { }

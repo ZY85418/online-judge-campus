@@ -2,6 +2,7 @@ package com.campus.oj.controller;
 
 import com.campus.oj.entity.Submission;
 import com.campus.oj.repository.SubmissionRepository;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.web.bind.annotation.*;
 import java.util.*;
 
@@ -9,9 +10,9 @@ import java.util.*;
 public class ResultController {
     private final SubmissionRepository submissions;
     public ResultController(SubmissionRepository submissions) { this.submissions=submissions; }
-    @GetMapping("/my") public List<Submission> mine(@RequestHeader(value="X-User-Id", defaultValue="1") Long userId) { return submissions.findByUserIdOrderBySubmitTimeDesc(userId); }
+    @GetMapping("/my") public List<Submission> mine(@RequestHeader(value="X-User-Id", defaultValue="1") Long userId) { return submissions.selectList(new QueryWrapper<Submission>().eq("user_id", userId).orderByDesc("submit_time")); }
     @GetMapping("/{examId}") public Map<String,Object> exam(@PathVariable Long examId) {
-        List<Submission> rows=submissions.findByExamId(examId); int total=rows.stream().mapToInt(s -> s.score == null ? 0 : s.score).sum();
+        List<Submission> rows=submissions.selectList(new QueryWrapper<Submission>().eq("exam_id", examId)); int total=rows.stream().mapToInt(s -> s.score == null ? 0 : s.score).sum();
         Map<String,Object> response=new LinkedHashMap<>(); response.put("submissions", rows); response.put("totalScore", total); response.put("count", rows.size()); return response;
     }
 }

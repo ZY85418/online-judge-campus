@@ -1,17 +1,20 @@
 package com.campus.oj.entity;
 
-import javax.persistence.*;
+import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
 
-@Entity
+@TableName("question")
 public class Question {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY) public Long id;
-    @Column(nullable = false) public String title;
-    @Column(columnDefinition = "TEXT") public String description;
+    @TableId(type = IdType.AUTO) public Long id;
+    public String title;
+    public String description;
     public String category;
     public String difficulty;
-    @Column(columnDefinition = "TEXT") public String standardAnswer;
+    @TableField("standard_answer") public String standardAnswer;
     public Integer score = 100;
     public String status = "PUBLISHED";
-    public LocalDateTime createTime = LocalDateTime.now();
+    @TableField("create_time") public LocalDateTime createTime = LocalDateTime.now();
 }

@@ -5,13 +5,13 @@
 ## 技术组成
 
 - 前端：Vue 3 + Vite
-- 后端：Java 8 + Spring Boot 2.7 + Spring Data JPA
+- 后端：Java 8 + Spring Boot 2.7 + MyBatis-Plus
 - 数据库：MySQL 8
 - 判题：本地模拟逻辑，不执行用户提交的代码
 
 ## 快速启动
 
-1. 创建 MySQL 数据库。可执行 [database/schema.sql](database/schema.sql)，或让应用首次启动时自动建表。
+1. 创建 MySQL 数据库并执行 [database/schema.sql](database/schema.sql)。
 2. 在 `backend/src/main/resources/application.yml` 配置数据库，默认连接 `localhost:3306/campus_oj`，账号/密码为 `root/root`。也可通过 `DB_HOST`、`DB_PORT`、`DB_NAME`、`DB_USERNAME`、`DB_PASSWORD` 环境变量覆盖。
 3. 启动后端：在 `backend` 目录执行 `mvn spring-boot:run`。
 4. 启动前端：在 `frontend` 目录执行 `npm.cmd install`，再执行 `npm.cmd run dev`。
@@ -40,7 +40,7 @@
 ## 项目结构
 
 ```
-backend/     Spring Boot REST API，Controller / Service / Repository / Entity 分层
+backend/     Spring Boot REST API，Controller / Service / Mapper / Entity 分层
 frontend/    Vue 单页应用
 database/    MySQL 建表脚本
 ```

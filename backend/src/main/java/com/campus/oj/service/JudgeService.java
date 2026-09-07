@@ -24,7 +24,7 @@ public class JudgeService {
         long elapsed = Math.max(1, System.currentTimeMillis() - started);
         if (persist) {
             Submission submission = new Submission(); submission.userId = userId; submission.examId = examId; submission.questionId = question.id;
-            submission.code = code; submission.result = result; submission.score = score; submission.judgeTime = elapsed; submissions.save(submission);
+            submission.code = code; submission.result = result; submission.score = score; submission.judgeTime = elapsed; submissions.insert(submission);
         }
         Map<String, Object> response = new LinkedHashMap<>();
         response.put("result", result); response.put("score", score); response.put("message", message); response.put("judgeTime", elapsed);

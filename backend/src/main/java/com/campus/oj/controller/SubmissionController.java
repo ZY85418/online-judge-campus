@@ -4,6 +4,7 @@ import com.campus.oj.entity.Question;
 import com.campus.oj.repository.QuestionRepository;
 import com.campus.oj.repository.SubmissionRepository;
 import com.campus.oj.service.JudgeService;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
@@ -15,7 +16,7 @@ public class SubmissionController {
     public SubmissionController(QuestionRepository questions, SubmissionRepository submissions, JudgeService judge) { this.questions=questions; this.submissions=submissions; this.judge=judge; }
     @PostMapping("/run") public Map<String,Object> run(@RequestBody Map<String,Object> body) { return judge.judge(null, null, question(body), (String)body.get("code"), false); }
     @PostMapping("/submit") public Map<String,Object> submit(@RequestBody Map<String,Object> body, @RequestHeader(value="X-User-Id", defaultValue="1") Long userId) { return judge.judge(userId, longValue(body.get("examId")), question(body), (String)body.get("code"), true); }
-    @GetMapping("/my") public Object mine(@RequestHeader(value="X-User-Id", defaultValue="1") Long userId) { return submissions.findByUserIdOrderBySubmitTimeDesc(userId); }
-    private Question question(Map<String,Object> body) { return questions.findById(longValue(body.get("questionId"))).orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND,"题目不存在")); }
+    @GetMapping("/my") public Object mine(@RequestHeader(value="X-User-Id", defaultValue="1") Long userId) { return submissions.selectList(new QueryWrapper<com.campus.oj.entity.Submission>().eq("user_id", userId).orderByDesc("submit_time")); }
+    private Question question(Map<String,Object> body) { Question question=questions.selectById(longValue(body.get("questionId"))); if(question==null) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"题目不存在"); return question; }
     private Long longValue(Object value) { if (value == null) return null; return ((Number)value).longValue(); }
 }
