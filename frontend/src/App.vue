@@ -82,11 +82,22 @@ async function load() {
 }
 async function login(event) {
   const data=new FormData(event.target); loading.value=true; notice.value=''
+  let registrationSucceeded=false
   try {
-    if(registering.value) await api.post('/auth/register',{username:data.get('username'),password:data.get('password'),realName:registerName.value})
+    if(registering.value) {
+      await api.post('/auth/register',{username:data.get('username'),password:data.get('password'),realName:registerName.value})
+      registrationSucceeded=true
+      registering.value=false
+      registerName.value=''
+    }
     const res=await api.post('/auth/login',{username:data.get('username'),password:data.get('password')}); token.value=res.data.token; localStorage.setItem('oj-token',token.value); user.value=res.data.user; profileName.value=user.value.realName||''; page.value='problems'; await load(); await restoreExam()
   }
-  catch (e) { notice.value=e.response?.data?.message || '登录失败，请检查账号和密码。' } finally { loading.value=false }
+  catch (e) {
+    if(registrationSucceeded) {
+      loginPassword.value=''
+      notice.value='注册成功，但自动登录失败，请重新登录。'
+    } else notice.value=e.response?.data?.message || '登录失败，请检查账号和密码。'
+  } finally { loading.value=false }
 }
 async function logout(){
   try { await api.post('/auth/logout'); clearSession(); notice.value='' }
