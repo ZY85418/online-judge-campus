@@ -65,11 +65,20 @@ function clearSession() {
 async function load() {
   if (!user.value) return
   const session = token.value
-  try {
-    const [q, e, s] = await Promise.all([api.get('/questions'), api.get('/exams'), api.get('/submissions/my')])
-    if (session !== token.value) return
-    questions.value=q.data; exams.value=e.data; submissions.value=s.data
-  } catch (e) { if (session === token.value || e.response?.status === 401) notice.value=errorMessage(e,'无法连接后端，请确认服务已启动。') }
+  const results = await Promise.allSettled([
+    api.get('/questions'),
+    api.get('/exams'),
+    api.get('/submissions/my')
+  ])
+  if (session !== token.value) return
+  const failures = []
+  if (results[0].status === 'fulfilled') questions.value = results[0].value.data
+  else if (results[0].reason?.response?.status !== 401) failures.push('题库')
+  if (results[1].status === 'fulfilled') exams.value = results[1].value.data
+  else if (results[1].reason?.response?.status !== 401) failures.push('考试')
+  if (results[2].status === 'fulfilled') submissions.value = results[2].value.data
+  else if (results[2].reason?.response?.status !== 401) failures.push('提交记录')
+  if (failures.length) notice.value = `${failures.join('、')}加载失败，请稍后重试。`
 }
 async function login(event) {
   const data=new FormData(event.target); loading.value=true; notice.value=''
