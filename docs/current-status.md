@@ -151,7 +151,7 @@
 | 高 | 截止校验、提交保存和成绩统计可能存在边界时间不一致 | `ExamService.judge()`、`JudgeService`、`Submission` | 已修复统一业务时间；58项后端测试和打包通过 |
 | 中 | 进入普通题库后可能清除当前考试前端上下文 | `App.vue` 的`practice()` | 已修复代码；普通练习与考试答题上下文、草稿键和提交参数已隔离；前端4项测试和生产构建通过；浏览器复核待补 |
 | 中 | 前后端北京时间依赖无时区时间和运行环境配置 | `ExamService`、`ExamExpiryScheduler`、`JudgeService`、`application.yml`、`time.js` | 已修复代码；考试生命周期统一使用`Asia/Shanghai`业务时间；后端59项测试、打包及前端回归通过；浏览器复核待补 |
-| 中 | 刷新、交卷和自动收卷响应可能存在旧状态覆盖 | `App.vue` 的`refreshExam()`和`finishExam()` | 待复核 |
+| 中 | 刷新、交卷和自动收卷响应可能存在旧状态覆盖 | `App.vue` 的`refreshExam()`和`finishExam()` | 已修复代码；请求版本号和考试编号校验会丢弃过期响应；前端4项测试和生产构建通过；浏览器竞态复核待补 |
 | 中 | 题目、考试、提交记录共用一个整体加载失败处理 | `App.vue` 的`load()` | 待复核 |
 | 中 | 注册成功但自动登录失败时的恢复流程需要验证 | `App.vue` 的`login()` | 待复核 |
 | 低 | 提交记录和成绩接口暂未分页，查询规模扩大后可能需要索引和批量查询 | `SubmissionController`、`ExamService`、`schema.sql` | 待评估 |
