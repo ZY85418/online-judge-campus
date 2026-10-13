@@ -5,11 +5,13 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.time.LocalDateTime;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @TableName("oj_user")
 public class User {
     @TableId(type = IdType.AUTO) public Long id;
     public String username;
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     public String password;
     @TableField("real_name")
     public String realName;

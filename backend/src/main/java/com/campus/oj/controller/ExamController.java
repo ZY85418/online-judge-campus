@@ -1,7 +1,10 @@
 package com.campus.oj.controller;
 
 import com.campus.oj.entity.Exam;
-import com.campus.oj.repository.ExamRepository;
+import com.campus.oj.entity.User;
+import com.campus.oj.service.ExamService;
+import javax.servlet.http.HttpServletRequest;
+import java.util.Map;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,12 +14,14 @@ import java.util.List;
 
 @RestController @RequestMapping("/api/exams")
 public class ExamController {
-    private final ExamRepository exams;
-    public ExamController(ExamRepository exams) { this.exams=exams; }
-    @GetMapping public List<Exam> list() { return exams.selectList(new QueryWrapper<Exam>()); }
-    @PostMapping @ResponseStatus(HttpStatus.CREATED) public Exam create(@RequestBody Exam exam) { exam.id=null; exams.insert(exam); return exam; }
-    @PutMapping("/{id}") public Exam update(@PathVariable Long id, @RequestBody Exam exam) { exam.id=id; exams.updateById(exam); return exam; }
-    @PostMapping("/{id}/start") public Exam start(@PathVariable Long id) { Exam exam=find(id); if (!"PUBLISHED".equals(exam.status)) throw new ResponseStatusException(HttpStatus.BAD_REQUEST,"考试尚未发布"); return exam; }
-    @PostMapping("/{id}/submit") public Exam finish(@PathVariable Long id) { return find(id); }
-    private Exam find(Long id) { Exam exam=exams.selectById(id); if(exam==null) throw new ResponseStatusException(HttpStatus.NOT_FOUND,"考试不存在"); return exam; }
+    private final ExamService exams;
+    public ExamController(ExamService exams) { this.exams=exams; }
+    @GetMapping public List<Exam> list(HttpServletRequest request) { return exams.list("ADMIN".equals(((User)request.getAttribute("authenticatedUser")).role)); }
+    @GetMapping("/my-status") public List<Map<String,Object>> myStatuses(@RequestHeader("X-User-Id") Long userId) { return exams.myStatuses(userId); }
+    @PostMapping @ResponseStatus(HttpStatus.CREATED) public Exam create(@RequestBody Exam exam) { return exams.save(null,exam); }
+    @PutMapping("/{id}") public Exam update(@PathVariable Long id,@RequestBody Exam exam) { return exams.save(id,exam); }
+    @PostMapping("/{id}/close") public Exam close(@PathVariable Long id) { return exams.close(id); }
+    @PostMapping("/{id}/start") public Map<String,Object> start(@PathVariable Long id,@RequestHeader("X-User-Id") Long userId) { return exams.start(id,userId); }
+    @GetMapping("/{id}/session") public Map<String,Object> current(@PathVariable Long id,@RequestHeader("X-User-Id") Long userId) { return exams.current(id,userId); }
+    @PostMapping("/{id}/submit") public Map<String,Object> finish(@PathVariable Long id,@RequestHeader("X-User-Id") Long userId) { return exams.finish(id,userId); }
 }

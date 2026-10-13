@@ -1,0 +1,8 @@
+DROP ALL OBJECTS;
+CREATE TABLE oj_user (id BIGINT AUTO_INCREMENT PRIMARY KEY, username VARCHAR(50) UNIQUE NOT NULL, password VARCHAR(100) NOT NULL, real_name VARCHAR(50), role VARCHAR(20), status VARCHAR(20), create_time TIMESTAMP);
+CREATE TABLE question (id BIGINT AUTO_INCREMENT PRIMARY KEY, title VARCHAR(200), description TEXT, sample_input TEXT, sample_output TEXT, category VARCHAR(50), difficulty VARCHAR(20), standard_answer TEXT, score INT, status VARCHAR(20), create_time TIMESTAMP);
+CREATE TABLE exam (id BIGINT AUTO_INCREMENT PRIMARY KEY, name VARCHAR(200), start_time TIMESTAMP, end_time TIMESTAMP, duration INT, status VARCHAR(20), question_ids VARCHAR(500), create_time TIMESTAMP);
+CREATE TABLE submission (id BIGINT AUTO_INCREMENT PRIMARY KEY, user_id BIGINT, exam_id BIGINT, question_id BIGINT, code TEXT, language VARCHAR(20), result VARCHAR(10), score INT, judge_time BIGINT, submit_time TIMESTAMP(6));
+CREATE TABLE exam_question (id BIGINT AUTO_INCREMENT PRIMARY KEY, exam_id BIGINT NOT NULL REFERENCES exam(id), question_id BIGINT NOT NULL REFERENCES question(id), sort_order INT, UNIQUE(exam_id,question_id));
+CREATE TABLE exam_attempt (id BIGINT AUTO_INCREMENT PRIMARY KEY, exam_id BIGINT NOT NULL REFERENCES exam(id), user_id BIGINT NOT NULL REFERENCES oj_user(id), start_time TIMESTAMP(6), deadline TIMESTAMP(6), status VARCHAR(20), submit_time TIMESTAMP(6), UNIQUE(exam_id,user_id));
+CREATE TABLE exam_result (id BIGINT AUTO_INCREMENT PRIMARY KEY, exam_id BIGINT NOT NULL, user_id BIGINT NOT NULL, total_score INT, submit_time TIMESTAMP(6), UNIQUE(exam_id,user_id), FOREIGN KEY(exam_id,user_id) REFERENCES exam_attempt(exam_id,user_id));
